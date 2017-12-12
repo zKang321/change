@@ -47,9 +47,7 @@ export default {
       var docEl = document.documentElement,
 		  resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
 			recalc = function() {
-				//设置根字体大小
 				var myfontSize = 100 * (docEl.clientWidth / 375);
-				
 				if(myfontSize > 30) {
 					docEl.style.fontSize = "30px";
 				}

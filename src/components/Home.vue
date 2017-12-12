@@ -2,7 +2,7 @@
   <div class="Home">
   	<h5>进制转换器</h5>
   	<ul @touchend='touchEnd' @touchstart='touchStart' class="showCount">
-  		<li :class="{'active' : item.tabOn, 'fontSize' : item.font}" @click="statusOn(index)" v-for="(item, index) in showList">{{item.value}}<span v-if="item.value === ''">{{item.placehoder}}</span></li>
+  		<li @longtap="copy" :class="{'active' : item.tabOn, 'fontSize' : index === 0 && showList[0].font, 'fontSize2' : index === 1 && showList[1].font}" @click="statusOn(index)" v-for="(item, index) in showList">{{item.value}}<span v-if="item.value === ''">{{item.placehoder}}</span></li>
   	</ul>
   	<ul class="code clear">
   		<li @click="putIn(index)" :class="!item.undisable ? 'disable' : ''" v-for="(item, index) in codeList">{{item.val}}</li>
@@ -36,7 +36,28 @@ export default {
                 ]
     }
   },
+  mounted () {
+    this.rem()
+  },
   methods: {
+    copy () {
+      alert('1')
+    },
+    rem () {
+      var docEl = document.documentElement,
+		  resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+			recalc = function() {
+				//设置根字体大小
+				var myfontSize = 100 * (docEl.clientWidth / 375);
+				
+				if(myfontSize > 30) {
+					docEl.style.fontSize = "30px";
+				}
+				docEl.style.fontSize = 100 * (docEl.clientWidth / 375) + 'px'
+			}
+			window.addEventListener(resizeEvt, recalc, false)
+			document.addEventListener('DOMContentLoaded', recalc, false)
+    },
   	touchStart (e) {
   	  this.clientXStart = e.changedTouches[0].clientX
   	},
@@ -49,15 +70,19 @@ export default {
           this.showList[i].value = ''
         }
   	  	this.showList[0].font = false
+  	  	this.showList[1].font = false
   	  } else if (touchMove < -10) {
   	    this.delet()
-  	    if (this.showList[0].value.length < 23) {
+  	    this.showList[1].value = this.showList[1].value + ''
+  	    if (this.showList[0].value.length < 15) {
           this.showList[0].font = false
+       } else if (this.showList[1].value.length < 15) {
+          this.showList[1].font = false
         }
   	  } else {
   	    return
   	  }
-  	},
+  	}, 
     statusOn (inx) {
       for (var i = 0; i < this.showList.length; i++) {
         this.showList[i].tabOn = false
@@ -89,10 +114,13 @@ export default {
       this.showList[0].value = this.showList[0].value + ''
       this.showList[1].value = this.showList[1].value + ''
       this.showList[2].value = this.showList[2].value + ''
-      if (this.showList[0].value.length > 23) {
+      if (this.showList[0].value.length > 15) {
         this.showList[0].font = true
       }
-      if (this.codeList[inx].undisable === true && this.showList[0].value.length < 32) {
+      if (this.showList[1].value.length > 15) {
+        this.showList[1].font = true
+      }
+      if (this.codeList[inx].undisable === true && this.showList[0].value.length < 52) {
         if (this.showList[0].tabOn === true) {
           this.showList[0].value += this.codeList[inx].val
           this.showList[1].value = parseInt(this.showList[0].value,2)
@@ -162,7 +190,7 @@ export default {
     margin: 0px auto;
     font-size: 16px;
     box-sizing: border-box;
-    padding-top: 50px;
+    padding-top: 30px;
 	}
 	.clear:after{
 		display:block;
@@ -182,7 +210,10 @@ export default {
 		color:#d9d9d9;
 	}
 	.fontSize{
-	  font-size: 14px!important;
+	  font-size: 0.1rem!important;
+	}
+	.fontSize2{
+	  font-size: 0.16rem!important;
 	}
 	h5{
 		font-size: 16px;
@@ -205,7 +236,7 @@ export default {
     box-sizing: border-box;
     position: relative;
     padding:0 3px;
-    font-size: 20px;
+    font-size: 0.3rem;
 	}
 	.showCount li span{
 		display: block;
